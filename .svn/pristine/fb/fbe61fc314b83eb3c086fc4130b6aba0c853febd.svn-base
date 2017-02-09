@@ -1,0 +1,279 @@
+﻿set sql_safe_updates = 0;
+
+-- removendo constraint de tabela nao utilizada
+ALTER TABLE `servagn_trunk_tim`.`relatorios_cfg` 
+DROP FOREIGN KEY `fk_relatorio_tipo_relatorio1`;
+ALTER TABLE `servagn_trunk_tim`.`relatorios_cfg` 
+DROP INDEX `fk_relatorio_tipo_relatorio1` ;
+
+-- campos_registro
+ALTER TABLE `servagn_trunk_tim`.`campos_registro` 
+CHANGE COLUMN `tipo_campo` `id_tipo_campo` INT(11) NOT NULL;
+
+-- limpando sujeira de filtros
+delete from servagn_trunk_tim.filtros where id_filtro in (
+	select id_filtro from (
+		select fil.id_filtro from servagn_trunk_tim.filtros fil
+		inner join servagn_trunk_tim.campos_registro cr on fil.id_campo = cr.id_campo
+		where cr.id_tipo_campo > 12
+	) t1
+);
+
+delete from `servagn_trunk_tim`.`campos_registro` where id_tipo_campo > 12;
+
+-- datas
+ALTER TABLE `servagn_trunk_tim`.`datas` 
+CHANGE COLUMN `iddata` `iddata` BIGINT(20) NOT NULL ;
+
+delete from `servagn_trunk_tim`.`datas` where iddata > 6;
+
+-- filtros
+ALTER TABLE `servagn_trunk_tim`.`filtros` 
+CHANGE COLUMN `id_tecnologia` `id_tecnologia` INT(11) NULL DEFAULT NULL ;
+
+update servagn_trunk_tim.filtros set guarda_registro_uso = 0 where guarda_registro_uso is null;
+
+-- valores_filtro
+ALTER TABLE `servagn_trunk_tim`.`valores_filtro` 
+CHANGE COLUMN `id_perfil` `id_perfil` INT(10) NULL ,
+CHANGE COLUMN `id_tipo_relatorio` `id_tipo_relatorio` INT(10) UNSIGNED NULL ;
+
+-- interface aba
+ALTER TABLE `servagn_trunk_tim`.`interface_aba` 
+CHANGE COLUMN `id_relatorio` `id_tipo_relatorio` BIGINT(20) NULL DEFAULT NULL ,
+CHANGE COLUMN `id_tecnologia` `id_tecnologia` BIGINT(20) NULL DEFAULT NULL ,
+ADD COLUMN `id_tipo_tecnologia` BIGINT(20) NULL AFTER `id_tecnologia`,
+CHANGE COLUMN `id_aba_pai` `id_aba_pai` INT(11) NULL DEFAULT NULL;
+
+update `servagn_trunk_tim`.`interface_aba` set id_aba_pai = null where id_aba_pai = 0;
+
+-- atualizar tipos de tecnologias para abas pais
+-- SELECT * FROM interface_aba where id_aba_pai is null;
+
+-- intervalos pre definidos
+CREATE TABLE `servagn_trunk_tim`.`intervalo_pre_definido` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `duracao` varchar(255) DEFAULT NULL,
+  `hora_inicial` time DEFAULT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+INSERT INTO `servagn_trunk_tim`.`intervalo_pre_definido` VALUES (1,'03:00:00','09:00:00','PMM1'),(2,'03:00:00','17:00:00','PMM2'),(3,'02:00:00','12:00:00','12-14');
+
+-- tecnologias
+ALTER TABLE `servagn_trunk_tim`.`tecnologias` 
+ADD COLUMN `id_tipo_tecnologia` BIGINT(20) NULL AFTER `nome_tecnologia`;
+
+-- tipo relatorio
+ALTER TABLE `servagn_trunk_tim`.`tipo_relatorio` 
+ADD COLUMN `drill` TINYINT(1) NULL AFTER `algoritmo` ,
+CHANGE COLUMN `id_tipo_relatorio` `id_tipo_relatorio` BIGINT(20) NOT NULL;
+
+update servagn_trunk_tim.tipo_relatorio set drill = 1;
+update servagn_trunk_tim.tipo_relatorio set drill = 0 where algoritmo = 2;
+
+-- tipo tecnologias
+CREATE TABLE `servagn_trunk_tim`.`tipo_tecnologia` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+INSERT INTO `servagn_trunk_tim`.`tipo_tecnologia` VALUES (1,'Voz'),(2,'Dados'),(3,'Mensagens'),(4,'Outros');
+
+-- valores filtro
+truncate servagn_trunk_tim.valores_filtro;
+ALTER TABLE `servagn_trunk_tim`.`valores_filtro` 
+ADD COLUMN `id_interface_filtro` INT(11) NULL AFTER `id_filtro` ,
+CHANGE COLUMN `id_relatorio` `id_relatorio` BIGINT(20) NOT NULL;
+
+-- valores tree
+ALTER TABLE `servagn_trunk_tim_analise_novo`.`valores_tree` 
+
+DROP FOREIGN KEY `FK_valores_tree_2`;
+
+ALTER TABLE `servagn_trunk_tim_analise_novo`.`valores_tree` 
+
+CHANGE COLUMN `id_filtro` `id_filtro` INT(11) NULL ,
+
+CHANGE COLUMN `id_perfil` `id_perfil` INT(10) UNSIGNED NULL ;
+
+ALTER TABLE `servagn_trunk_tim_analise_novo`.`valores_tree` 
+
+ADD CONSTRAINT `FK_valores_tree_2`
+  FOREIGN KEY (`id_filtro`)
+  
+REFERENCES `servagn_trunk_tim_analise_novo`.`filtros` (`id_filtro`);
+
+
+-- valores tree salvos
+truncate servagn_trunk_tim.valores_tree_salvos;
+ALTER TABLE `servagn_trunk_tim`.`valores_tree_salvos` 
+CHANGE COLUMN `id_relatorio` `id_relatorio` BIGINT(20) NOT NULL ,
+CHANGE COLUMN `id_tipo_relatorio` `id_tipo_relatorio` BIGINT(20) NOT NULL DEFAULT '0' ,
+CHANGE COLUMN `id_filtro` `id_filtro` INT(10) UNSIGNED NULL ,
+CHANGE COLUMN `id_perfil` `id_perfil` INT(10) UNSIGNED NULL;
+
+-- parametros sistema
+CREATE TABLE `servagn_trunk_tim`.`parametro_sistema` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `valor` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+INSERT INTO `servagn_trunk_tim`.`parametro_sistema` VALUES (1,'CDRVIEW_SERVER','192.168.200.71'),(2,'CDRVIEW_PORT_CONTROLE','7767'),(3,'CDRVIEW_PORT_PROCESSOS','7868'),(4,'MAXIMO_IMPORTACAO_VALORES_TREE','500000'),(5,'MAXIMO_EXECUCOES_USUARIO','3');
+
+-- usuarios
+ALTER TABLE `servagn_trunk_tim`.`usuario_cdrview` 
+CHANGE COLUMN `id_usuario` `id_usuario` BIGINT(20) NOT NULL ;
+
+-- perfil
+ALTER TABLE `servagn_trunk_tim`.`perfil` 
+CHANGE COLUMN `id_permissoes` `id_permissoes` INT(11) NULL DEFAULT NULL ,
+ADD COLUMN `exportacao_comum` TINYINT(1) NULL AFTER `id_permissoes`,
+ADD COLUMN `exportacao_conf` TINYINT(1) NULL AFTER `exportacao_comum`;
+
+update servagn_trunk_tim.perfil set exportacao_comum = 1, exportacao_conf = 0;
+
+-- atualizar tipos das tecnologias
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='1' WHERE `id_tecnologia`='2';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='1' WHERE `id_tecnologia`='17';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='3' WHERE `id_tecnologia`='27';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='3' WHERE `id_tecnologia`='28';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='1' WHERE `id_tecnologia`='30';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='2' WHERE `id_tecnologia`='31';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='3' WHERE `id_tecnologia`='42';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='2' WHERE `id_tecnologia`='43';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='3' WHERE `id_tecnologia`='50';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='1' WHERE `id_tecnologia`='51';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='3' WHERE `id_tecnologia`='60';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='2' WHERE `id_tecnologia`='57';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='1' WHERE `id_tecnologia`='80';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='1' WHERE `id_tecnologia`='81';
+UPDATE `servagn_trunk_tim`.`tecnologias` SET `id_tipo_tecnologia`='2' WHERE `id_tecnologia`='82';
+
+-- limpando sujeira de interface_filtros
+delete from servagn_trunk_tim.interface_filtros where id in (
+	select id from (
+		select
+			inf.id
+		from 
+			servagn_trunk_tim.interface_filtros inf
+			left join servagn_trunk_tim.filtros fil on inf.id_filtro = fil.id_filtro
+		where
+			fil.id_filtro is null
+	) t1
+);
+
+update servagn_trunk_tim.interface_filtros set comparador = null where comparador = '';
+
+-- limpando sujeira de interface_aba
+delete from servagn_trunk_tim.interface_aba where id_aba in (
+	select id_aba from (
+		select
+			aba1.id_aba
+		from 
+			servagn_trunk_tim.interface_aba aba1
+			left join servagn_trunk_tim.interface_aba aba2 on aba1.id_aba_pai = aba2.id_aba
+		where
+			aba1.id_aba_pai is not null 
+			and aba2.id_aba is null
+	) t1
+);
+
+-- limpando sujeiras de agendas
+delete from servagn_trunk_tim.datas_execucoes where id in (
+	select id from (
+		select
+			execs.id
+		from 
+			servagn_trunk_tim.datas_execucoes execs
+			left join servagn_trunk_tim.agenda ag on execs.id_agenda = ag.id_agenda
+		where
+			ag.id_agenda is null
+	) t1
+);
+
+-- atualizar abas por tipo tecnologias
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='17';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='24';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='28';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='37';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='64';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='71';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='75';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='84';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='110';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='117';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='121';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='130';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='164';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='171';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='175';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='180';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='184';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='3' WHERE `id_aba`='190';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='193';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='196';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='215';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='236';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='255';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='276';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='295';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='316';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='335';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='356';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='375';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='396';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='415';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='436';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='476';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='455';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='495';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='516';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='535';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='556';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='575';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='596';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='615';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='636';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='655';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='676';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='695';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='718';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='731';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='744';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='757';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='770';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='783';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='809';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='822';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='835';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='848';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='861';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='2' WHERE `id_aba`='874';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='887';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='888';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='889';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='890';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='891';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='893';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='894';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='895';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='922';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='929';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='936';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='938';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='940';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='942';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='947';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='949';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='951';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='953';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='955';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='958';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='959';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='976';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='991';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='992';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='993';
+UPDATE `servagn_trunk_tim`.`interface_aba` SET `id_tipo_tecnologia`='1' WHERE `id_aba`='1020';

@@ -1,0 +1,13 @@
+<jboss-deployment-structure>  
+  <deployment>
+        <dependencies>
+            <system export="true">
+                <paths>
+                    <path name="org/omg/CORBA"/>
+                    <path name="org/omg/CORBA/portable"/>
+                    <path name="com/sun/corba/se/impl/logging"/>
+                </paths>
+            </system>
+        </dependencies>
+    </deployment>
+ </jboss-deployment-structure>  

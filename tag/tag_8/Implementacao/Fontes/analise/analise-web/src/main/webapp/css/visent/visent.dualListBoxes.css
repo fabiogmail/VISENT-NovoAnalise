@@ -1,0 +1,30 @@
+.dlb_container label {
+	margin-right:5px;	
+}
+
+.dlb_col{
+	display: inline-block;
+}
+
+.dlb_col_central{
+	vertical-align: top;
+	margin-top: 13px;
+	margin-left: 5px;
+}
+
+.dlb_filtro{
+	background: #ffffff url(../../images/lupa.png) no-repeat center right;
+	margin-bottom: 10px !important;
+    width: 100%;
+    padding: 2px 4px;
+}
+
+.dlb_enviar, .dlb_retirar {
+	cursor: pointer;
+}
+
+.dlb_select {
+    min-width: 200px;
+    font-size: 12px;
+    min-height: 100px;
+}

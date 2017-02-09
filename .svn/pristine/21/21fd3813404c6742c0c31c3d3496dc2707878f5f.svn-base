@@ -1,0 +1,40 @@
+.tab-pane {
+border: 1px solid #ccc;
+border-top: none;
+background: #f9f9f9;
+padding: 7px;
+}
+
+.nav-tabs {
+border-bottom: 1px solid #ccc;
+}
+
+.nav-tabs li a {
+background: #f0f0f0;
+padding: 5px 20px 2px 20px;
+text-decoration: none;
+font-weight: bold;
+color: #4c4c4c;
+border: 1px solid #ccc;
+border-bottom: none;
+border-top-left-radius: 2px;
+border-top-right-radius: 2px;
+-moz-border-radius-topleft: 2px;
+-moz-border-radius-topright: 2px;
+-webkit-border-radius-topleft: 2px;
+-webkit-border-radius-topright: 2px;
+}
+
+.nav-tabs li a:hover {
+background:#e8e8e8;
+border-color:#AAA;
+color:#000;	
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+background: #f9f9f9;
+border-bottom: 1px solid #f9f9f9 !important;
+color: #353232;
+font-weight: bold;
+border: 1px solid #ccc;
+}

@@ -1,0 +1,26 @@
+{
+  "name": "analise-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "bower install && gulp"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "bower": "^1.7.9"
+  },
+  "devDependencies": {
+    "event-stream": "^3.3.4",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-filter": "^4.0.0",
+    "gulp-inject": "^4.1.0",
+    "gulp-main-bower-files": "^1.5.3",
+    "gulp-order": "^1.1.1",
+    "gulp-uglify": "^2.0.0",
+    "wiredep": "^4.0.0"
+  }
+}

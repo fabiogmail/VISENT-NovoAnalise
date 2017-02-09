@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>br.com.visent</groupId>
+    <artifactId>analise-parent</artifactId>
+    <version>1.0</version>
+  </parent>
+  
+  <groupId>br.com.visent.analise</groupId>
+  <artifactId>analise-core</artifactId>
+  <version>1.0</version>
+  
+  <name>analise-core</name>
+  <url>http://maven.apache.org</url>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.org.wildfly>8.1.0.Final</version.org.wildfly>
+    <version.junit>4.11</version.junit>
+  </properties>
+  
+  <dependencies>
+  
+    <!-- JEE -->
+  	<dependency>
+		<groupId>javax</groupId>
+		<artifactId>javaee-api</artifactId>
+	</dependency>
+  
+    <!-- Logging -->
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+	</dependency>
+  
+  	<!-- Hibernate -->	
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>4.3.10.Final</version>
+		<scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-entitymanager</artifactId>
+		<version>4.3.10.Final</version>
+		<scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+		<groupId>cdrview</groupId>
+		<artifactId>InterfaceCDRView</artifactId>
+		<version>1.0.0</version>
+	</dependency>
+	
+	<!-- MYSQL DRIVER -->
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.20</version>
+	</dependency>
+	
+    <!-- JUnit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+	    <groupId>org.jboss.arquillian.junit</groupId>
+	    <artifactId>arquillian-junit-container</artifactId>
+	    <scope>test</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+	    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+	    <scope>test</scope>
+	</dependency>
+<!-- 	<dependency> -->
+<!--         <groupId>org.wildfly.arquillian</groupId> -->
+<!--         <artifactId>wildfly-arquillian-container-embedded</artifactId> -->
+<!--         <version>2.0.0.Final</version> -->
+<!--         <scope>test</scope> -->
+<!--     </dependency> -->
+
+<!-- 	<dependency> -->
+<!--         <groupId>org.wildfly</groupId> -->
+<!--         <artifactId>wildfly-arquillian-container-embedded</artifactId> -->
+<!--         <version>${version.org.wildfly}</version> -->
+<!--         <scope>test</scope> -->
+<!--     </dependency> -->
+    
+<!--     <dependency> -->
+<!--         <groupId>org.wildfly</groupId> -->
+<!--         <artifactId>wildfly-embedded</artifactId> -->
+<!--         <version>${version.org.wildfly}</version> -->
+<!--         <exclusions> -->
+<!--             <exclusion> -->
+<!--                 <groupId>sun.jdk</groupId> -->
+<!--                 <artifactId>jconsole</artifactId> -->
+<!--             </exclusion> -->
+<!--         </exclusions> -->
+<!--         <scope>test</scope> -->
+<!--     </dependency> -->
+    
+  </dependencies>
+  
+  <profiles>
+        
+<!--         Arquillian WildFly managed profile -->
+        <profile>
+            <id>arq-wildfly-managed</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly</groupId>
+                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <version>${version.org.wildfly}</version>
+                    <scope>test</scope>
+                    <exclusions>
+			            <exclusion>
+			                <groupId>sun.jdk</groupId>
+			                <artifactId>jconsole</artifactId>
+			            </exclusion>
+			        </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+        
+  </profiles>
+  
+  <dependencyManagement>
+        <dependencies>
+              <!-- Arquillian Jboss -->
+              <dependency>
+                    <groupId>org.jboss.arquillian</groupId>
+                    <artifactId>arquillian-bom</artifactId>
+                    <version>1.1.11.Final</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+              </dependency>
+        </dependencies>
+  </dependencyManagement>
+  
+	<build>
+		<pluginManagement>
+	        <plugins>
+	            <plugin>
+	                <artifactId>maven-compiler-plugin</artifactId>
+	                <version>3.1</version>
+	                <configuration>
+	                    <source>1.8</source>
+	                    <target>1.8</target>
+	                </configuration>
+	            </plugin>
+<!-- 	            <plugin> -->
+<!-- 	                <artifactId>maven-surefire-plugin</artifactId> -->
+<!-- 	                <version>2.17</version> -->
+<!-- 	                <configuration> -->
+<!-- 	                    <systemPropertyVariables> -->
+<!-- 	                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager> -->
+<!-- 	                    </systemPropertyVariables> -->
+<!-- 	                </configuration> -->
+<!-- 	            </plugin> -->
+	        </plugins>
+		</pluginManagement>
+	</build>
+	
+</project>

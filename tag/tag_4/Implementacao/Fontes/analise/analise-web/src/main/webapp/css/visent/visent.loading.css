@@ -1,0 +1,37 @@
+.visent-loading {
+position: absolute;
+background: #fff;
+opacity: 0.9;
+height: 100%;
+width: 100%;
+left: 0;
+top: 0;
+box-shadow: 0 0 3px #ddd;
+border-radius: 3px;
+z-index: 101;
+}
+
+.visent-loading-msg {
+position: absolute;
+top: 50%;
+left: 50%;
+margin: -15px 0 0 -50px;
+font-weight: bold;
+}
+
+.visent-loading-container {
+position: relative;
+}
+
+.visent-blockdiv {
+position: absolute;
+background: #efefef;
+opacity: 0.9;
+height: 100%;
+width: 100%;
+left: 0;
+top: 0;
+box-shadow: 0 0 3px #ddd;
+border-radius: 3px;
+z-index: 99;
+}

@@ -1,0 +1,87 @@
+.visent-help-icon {
+width: 30px;
+text-align: center;
+padding-top: 10px;
+font-size: 18px;
+color: #52626C;
+}
+
+.visent-help-icon:hover {
+color: #474C51;
+}
+
+#visent-tip {
+display: none;
+border: 5px solid #487596;
+padding: 65px 15px;
+position: fixed;
+bottom: 10px;
+right: 10px;
+z-index: 999999;
+border-radius: 5px;
+background-color: #fff;
+color: #2F2F2F;
+max-width: 220px;
+box-shadow: 3px 3px 6px #ACACAC;
+font-size: 13px;
+text-align: justify;
+}
+
+#visent-tip-header {
+position: absolute;
+top: 0px;
+left: 0px;
+background-color: #487596;
+width: 100%;
+padding: 0px 0 5px 3px;
+}
+
+#visent-tip .glyphicon {
+color: #fff;
+}
+
+.visent-help {
+position: absolute;
+background-color: #000;
+opacity: 0.5;
+height: 100%;
+width: 100%;
+left: 0;
+top: 0;
+z-index: 99;
+}
+
+#visent-help-container {
+position: absolute;
+z-index: 101;
+top: 100px;
+background-color: #efefef;
+padding: 10px;
+font-size: 11px;
+}
+
+#visent-help-container .panel-body {
+min-height: 270px;
+}
+
+#visent-help-container .panel-heading {
+font-size: 12px;
+font-weight: bold;
+text-transform: uppercase;
+}
+
+.visent-help-highlight {
+background-color: #f0ad4e;
+opacity: 0.3;
+position: absolute;
+z-index: 99;
+}
+
+#visent-help-home {
+margin-right: 5px;
+margin-bottom: 5px;
+}
+
+#visent-help-close {
+margin-bottom: 5px;
+}
